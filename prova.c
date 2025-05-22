@@ -185,22 +185,6 @@ void init_lista_encadeada(lista_encadeada* le) {
 	le->qnt = 0;
 }
 
-//static bool novo_no_lista(lista_encadeada* le, type n) {
-//	no_lista* novo_no = malloc(sizeof(no_lista));
-//	if (!novo_no) return false;
-//	novo_no->dado = n;
-//	novo_no->prox = NULL;
-//	novo_no->ant = le->fim;
-//
-//	if (!le->inicio) le->inicio = novo_no;
-//	else le->fim->prox = novo_no;
-//
-//	le->fim = novo_no;
-//	le->qnt++;
-//
-//	return true;
-//}
-
 bool empilhar_encadeada(lista_encadeada* le, type n) {
 	no_lista* novo_no = malloc(sizeof(no_lista));
 	if (!novo_no) return false;
