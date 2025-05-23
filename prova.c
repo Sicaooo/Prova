@@ -7,7 +7,7 @@ void init_lista(lista* l) {
 }
 
 bool inserir(lista* l, type n, int pos) {
-	if (l->qnt >= TAM_MAX || pos > l->qnt) return false;
+	if (lista_cheia(*l) || pos > l->qnt || pos < 0) return false;
 
 	int i;
 	for (i = l->qnt; i >= pos; i--) l->dados[i + 1] = l->dados[i];
@@ -247,9 +247,11 @@ bool desenfileirar_encadeada(lista_encadeada* le, type* t) {
 }
 
 bool inserir_encadeado(lista_encadeada* le, type n, int k) {
-	if (k < 0 || k > le->qnt - 1) return false;
+	if (k < 0 || k > le->qnt) return false;
 	
 	no_lista* no_atual;
+
+	if (k == le->qnt) return empilhar_encadeada(le, n);
 
 	if (k < le->qnt / 2) {
 		no_atual = le->inicio;
@@ -261,15 +263,107 @@ bool inserir_encadeado(lista_encadeada* le, type n, int k) {
 	}
 
 	no_lista* no_anterior = no_atual->ant;
+
 	no_lista* novo_no = malloc(sizeof(no_lista));
 	if (!novo_no) return false;
+
 	novo_no->dado = n;
 	novo_no->prox = no_atual;
 	novo_no->ant = no_anterior;
 	no_atual->ant = novo_no;
-	no_anterior->prox = novo_no;
+
+	if (!no_anterior) le->inicio = novo_no;
+	else no_anterior->prox = novo_no;
 
 	le->qnt++;
+
+	return true;
+}
+
+bool inserir_ordenado_encadeado(lista_encadeada* le, type n) {
+	no_lista* no_atual = le->inicio;
+
+	while (no_atual && no_atual->dado < n) no_atual = no_atual->prox;
+	
+	if (!no_atual) return empilhar_encadeada(le, n);
+
+	no_lista* no_anterior = no_atual->ant;
+
+	no_lista* novo_no = malloc(sizeof(no_lista));
+	if (!novo_no) return false;
+
+	novo_no->dado = n;
+	novo_no->prox = no_atual;
+	novo_no->ant = no_anterior;
+	no_atual->ant = novo_no;
+
+	if (!no_anterior) le->inicio = novo_no;
+	else no_anterior->prox = novo_no;
+
+	le->qnt++;
+
+	return true;
+}
+
+no_lista* acessar_encadeado(lista_encadeada le, int i) {
+	if (i < 0 || i > le.qnt - 1) return NULL;
+
+	no_lista* no_atual;
+	if (i < le.qnt / 2) {
+		no_atual = le.inicio;
+		for (int j = 0; j < i; j++) no_atual = no_atual->prox;
+	}
+	else {
+		no_atual = le.fim;
+		for (int j = le.qnt - 1; j > i; j--) no_atual = no_atual->ant;
+	}
+
+	return no_atual;
+}
+
+int localizar_encadeado(lista_encadeada le, type n, int k) {
+	no_lista* no_atual = le.inicio;
+
+	int ocorrencias = 1;
+	for (int i = 0; i < le.qnt; i++) {
+		if (no_atual->dado == n) {
+			if (ocorrencias == k) return i;
+			ocorrencias++;
+		}
+		no_atual = no_atual->prox;
+	}
+
+	return -1;
+}
+
+bool juntar_encadeado(lista_encadeada* le1, lista_encadeada* le2) {
+	if (!le2->inicio || !le1->fim) return false;
+	
+	le1->fim->prox = le2->inicio;
+	le2->inicio->ant = le1->fim;
+
+	le1->fim = le2->fim;
+	le2->inicio = le1->inicio;
+
+	le1->qnt = le2->qnt = le1->qnt + le2->qnt;
+
+	return true;
+}
+
+bool alterar_encadeado(lista_encadeada* le, int i, type n) {
+	if (i < 0 || i > le->qnt - 1) return false;
+
+	no_lista* no_atual;
+	if (i < le->qnt / 2) {
+		no_atual = le->inicio;
+		for (int j = 0; j < i; j++) no_atual = no_atual->prox;
+	}
+	else {
+		no_atual = le->fim;
+		for (int j = le->qnt - 1; j > i; j--) no_atual = no_atual->ant;
+	}
+
+	no_atual->dado = n;
 
 	return true;
 }
