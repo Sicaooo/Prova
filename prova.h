@@ -131,7 +131,7 @@ int localizar_encadeado(lista_encadeada lista_encadeada, type n, int k);
 //ambas as listas serao identicas, não importando qual ira mexer a partir daqui
 bool juntar_encadeado(lista_encadeada* lista_encadeada1, lista_encadeada* lista_encadeada2);
 
-//altera o dado do no na posicão pos e retorna true se foi possivel ou false caso contrario
+//altera o dado do no na posicao pos e retorna true se foi possivel ou false caso contrario
 bool alterar_encadeado(lista_encadeada* lista_encadeada, int pos, type n);
 
 #endif // !PROVA_H
