@@ -6,7 +6,7 @@
 #include <stdbool.h>
 #define TAM_MAX 10
 
-//tipo de dados tratados pelas funÁıes
+//tipo de dados tratados pelas fun√ß√µes
 typedef int type;
 
 //estrutura da lista sequencial
@@ -98,7 +98,7 @@ type acessar_primeiro(lista lista);
 //retorna o ultimo elemento da fila se possivel e o endereco de dados caso contrario
 type acessar_ultimo(lista lista);
 
-//exibe os elementos de estruturas sequenciais. Talvez seja necessario mudar o tipo de formataÁ„o no printf() dependendo do tipo dos dados
+//exibe os elementos de estruturas sequenciais. Talvez seja necessario mudar o tipo de formata√ß√£o no printf() dependendo do tipo dos dados
 void print_sequencial(lista l);
 
 //inicializa a lista encadeada
@@ -108,14 +108,30 @@ void init_lista_encadeada(lista_encadea);
 bool empilhar_encadeada(lista_encadeada* lista_encadeada, type n);
 
 //remove o ultimo elemento e armazena em elemento_retorno. Retorna true se foi possivel e false caso contrario. 
-//No caso do retorno false o valor de elemento_retorno ser· 0 e a lista ser· reinicializada
+//No caso do retorno false o valor de elemento_retorno ser√° 0 e a lista ser√° reinicializada
 bool desempilhar_encadeada(lista_encadeada* lista_encadeada, type* elemento_retorno);
 
 //remove primeiro elemento e armazena em elemento_retorno. Retorna true se foi possivel e false caso contrario. 
-//No caso do retorno false o valor de elemento_retorno ser· 0 e a lista ser· reinicializada
+//No caso do retorno false o valor de elemento_retorno ser√° 0 e a lista ser√° reinicializada
 bool desenfileirar_encadeada(lista_encadeada* lista_encadeada, type* elemento_retorno);
 
 //insere o elemento n na posicao pos e devolve true se foi possivel e false caso contrario
 bool inserir_encadeado(lista_encadeada* lista_encadeada, type n, int pos);
+
+//insere o elemento n na lista de forma a mante-la ordenada. Retorna true se foi possivel e false caso contrario
+bool inserir_ordenado_encadeado(lista_encadeada* lista_encadeada, type n);
+
+//devolve o no da posicao pos ou NULL caso nao haja
+no_lista* acessar_encadeado(lista_encadeada lista_encadeada, int pos);
+
+//devolve a posicao do k-esimo no que contem o dado n ou -1 caso nao exista
+int localizar_encadeado(lista_encadeada lista_encadeada, type n, int k);
+
+//junta ambas as listas e retorna true se foi possivel e false caso contrario
+//ambas as listas serao identicas, n√£o importando qual ira mexer a partir daqui
+bool juntar_encadeado(lista_encadeada* lista_encadeada1, lista_encadeada* lista_encadeada2);
+
+//altera o dado do no na posicao pos e retorna true se foi possivel ou false caso contrario
+bool alterar_encadeado(lista_encadeada* lista_encadeada, int pos, type n);
 
 #endif // !PROVA_H
