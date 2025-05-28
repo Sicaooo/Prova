@@ -172,6 +172,69 @@ type acessar_ultimo(lista f) {
 	return f.dados[f.fim - 1];
 }
 
+void heap_minimo(lista* l) {
+	int atual = (l->qnt - 1) / 2;
+
+	while (atual >= 0) {
+		int esquerda = 2 * atual + 1;
+		int direita = 2 * atual + 2;
+		bool maior_esquerda = l->dados[atual] > l->dados[esquerda];
+		bool maior_direita = direita < l->qnt && l->dados[atual] > l->dados[direita];
+		
+		int copia_atual = atual;
+		while (maior_esquerda || maior_direita) {
+			int troca;
+			if (maior_esquerda && maior_direita) troca = l->dados[esquerda] < l->dados[direita] ? esquerda : direita;
+			else if (maior_esquerda) troca = esquerda;
+			else if (maior_direita) troca = direita;
+
+			int aux = l->dados[copia_atual];
+			l->dados[copia_atual] = l->dados[troca];
+			l->dados[troca] = aux;
+
+			copia_atual = troca;
+			esquerda = 2 * copia_atual + 1;
+			direita = 2 * copia_atual + 2;
+
+			maior_esquerda = esquerda < l->qnt && l->dados[copia_atual] > l->dados[esquerda];
+			maior_direita = direita < l->qnt && l->dados[copia_atual] > l->dados[direita];
+		}
+		atual--;
+	}
+}
+
+void heap_maximo(lista* l) {
+	int atual = (l->qnt - 1) / 2;
+
+	while (atual >= 0) {
+		int esquerda = 2 * atual + 1;
+		int direita = 2 * atual + 2;
+
+		bool menor_esquerda = l->dados[atual] < l->dados[esquerda];
+		bool menor_direita = direita < l->qnt && l->dados[atual] < l->dados[direita];
+
+		int copia_atual = atual;
+		while (menor_esquerda || menor_direita) {
+			int troca;
+			if (menor_esquerda && menor_direita) troca = l->dados[esquerda] > l->dados[direita] ? esquerda : direita;
+			else if (menor_esquerda) troca = esquerda;
+			else if (menor_direita) troca = direita;
+
+			int aux = l->dados[copia_atual];
+			l->dados[copia_atual] = l->dados[troca];
+			l->dados[troca] = aux;
+
+			copia_atual = troca;
+			esquerda = 2 * copia_atual + 1;
+			direita = 2 * copia_atual + 2;
+
+			menor_esquerda = esquerda < l->qnt && l->dados[copia_atual] < l->dados[esquerda];
+			menor_direita = direita < l->qnt && l->dados[copia_atual] < l->dados[direita];
+		}
+		atual--;
+	}
+}
+
 void print_sequencial(lista l) {
 	for (int i = l.inicio; l.qnt; i++) {
 		printf("%d ", l.dados[i % TAM_MAX]);
@@ -366,4 +429,103 @@ bool alterar_encadeado(lista_encadeada* le, int i, type n) {
 	no_atual->dado = n;
 
 	return true;
+}
+
+void print_lista_encadeada(lista_encadeada le) {
+	no_lista* no_atual = le.inicio;
+
+	for (int i = 0; i < le.qnt; i++) {
+		printf("%d ", no_atual->dado);
+		no_atual = no_atual->prox;
+	}
+	printf("\n");
+}
+
+void init_arvore(arvore* a) {
+	a->raiz = NULL;
+	a->qnt = 0;
+}
+
+static void ajustar_altura_no(no_arvore* no_atual) {
+	no_arvore* no_esquerdo = no_atual->esq;
+	no_arvore* no_direito = no_atual->dir;
+
+	if (no_esquerdo && no_direito) {
+		no_atual->altura = (no_esquerdo->altura > no_direito->altura ? no_esquerdo->altura : no_direito->altura) + 1;
+		no_atual->bal = no_direito->altura - no_esquerdo->altura;
+	}
+	else if (no_esquerdo) {
+		no_atual->altura = no_esquerdo->altura + 1;
+		no_atual->bal = -no_esquerdo->altura - 1;
+	}
+	else if (no_direito) {
+		no_atual->altura = no_direito->altura + 1;
+		no_atual->bal = no_direito->altura + 1;
+	}
+}
+
+static void rotacao_esquerda(no_arvore** no_desbalanceado) {
+	no_arvore* no_temp = (*no_desbalanceado)->dir->esq;
+	no_arvore* no_direita = (*no_desbalanceado)->dir;
+
+	no_direita->esq = (*no_desbalanceado);
+	(*no_desbalanceado)->dir = no_temp;
+
+	(*no_desbalanceado) = no_direita;
+
+	ajustar_altura_no((*no_desbalanceado)->esq);
+	ajustar_altura_no(*no_desbalanceado);
+}
+
+static void rotacao_direita(no_arvore** no_desbalanceado) {
+	no_arvore* no_temp = (*no_desbalanceado)->esq->dir;
+	no_arvore* no_esquerda = (*no_desbalanceado)->esq;
+
+	no_esquerda->dir = (*no_desbalanceado);
+	(*no_desbalanceado)->esq = no_temp;
+
+	(*no_desbalanceado) = no_esquerda;
+
+	ajustar_altura_no((*no_desbalanceado)->dir);
+	ajustar_altura_no(*no_desbalanceado);
+}
+
+static void balancear_arvore(no_arvore** no_atual) {
+	if ((*no_atual)->bal > 1) {
+		if ((*no_atual)->dir->bal > 0) rotacao_esquerda(no_atual);
+		else {
+			rotacao_direita(&(*no_atual)->dir);
+			rotacao_esquerda(no_atual);
+		}
+	}
+	else {
+		if ((*no_atual)->esq->bal < 1) rotacao_direita(no_atual);
+		else {
+			rotacao_esquerda(&(*no_atual)->esq);
+			rotacao_direita(no_atual);
+		}
+	}
+}
+
+void inserir_arvore(arvore* a, no_arvore** no_atual, type n) {
+	if (!*no_atual) {
+		*no_atual = malloc(sizeof(no_arvore));
+		(*no_atual)->dado = n;
+		(*no_atual)->ocorrencias = 1;
+		(*no_atual)->altura = (*no_atual)->bal = 0;
+		(*no_atual)->esq = (*no_atual)->dir = NULL;
+		a->qnt++;
+		return;
+	}
+
+	if ((*no_atual)->dado > n) inserir_arvore(a, &(*no_atual)->esq, n);
+	else if ((*no_atual)->dado < n) inserir_arvore(a, &(*no_atual)->dir, n);
+	else {
+		(*no_atual)->ocorrencias++;
+		a->qnt++;
+		return;
+	}
+
+	ajustar_altura_no(*no_atual);
+	if ((*no_atual)->bal > 1 || (*no_atual)->bal < -1) balancear_arvore(no_atual);
 }
