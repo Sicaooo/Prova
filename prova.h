@@ -24,10 +24,10 @@ typedef struct no_lista{
 
 //estrutura de nos da arvore encadeada
 typedef struct no_arvore{
-	struct no_arvore* dir;
 	struct no_arvore* esq;
+	struct no_arvore* dir;
 	type dado;
-	int ocorrencias, bal;
+	int ocorrencias, bal, altura;
 }no_arvore;
 
 //estrutura da lista duplamente encadeada
@@ -98,11 +98,17 @@ type acessar_primeiro(lista lista);
 //retorna o ultimo elemento da fila se possivel e o endereco de dados caso contrario
 type acessar_ultimo(lista lista);
 
+//constroi um heap minimo
+void heap_minimo (lista* lista);
+
+//constroi um heap maximo
+void heap_maximo (lista* lista);
+
 //exibe os elementos de estruturas sequenciais. Talvez seja necessario mudar o tipo de formatação no printf() dependendo do tipo dos dados
 void print_sequencial(lista l);
 
 //inicializa a lista encadeada
-void init_lista_encadeada(lista_encadea);
+void init_lista_encadeada(lista_encadeada* lista_encadeada);
 
 //adiciona o elemento n no final da lista encadeada e retorna true se for possivel e false caso contrario
 bool empilhar_encadeada(lista_encadeada* lista_encadeada, type n);
@@ -133,5 +139,14 @@ bool juntar_encadeado(lista_encadeada* lista_encadeada1, lista_encadeada* lista_
 
 //altera o dado do no na posicao pos e retorna true se foi possivel ou false caso contrario
 bool alterar_encadeado(lista_encadeada* lista_encadeada, int pos, type n);
+
+//exibe os valores da lista encadaeada. Talvez seja necessario mudar o tipo de formatação no printf() dependendo do tipo dos dados
+void print_lista_encadeada(lista_encadeada lista_encadeada);
+
+//inicializa a arvore AVL
+void init_arvore(arvore* arvore);
+
+//insere os elementos e balanceia caso necessario
+void inserir_arvore(arvore* arvore, no_arvore** raiz, type n);
 
 #endif // !PROVA_H
