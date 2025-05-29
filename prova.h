@@ -4,14 +4,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#define TAM_MAX 10
+#define TAM_LISTA 10
+#define TAM_HASH 10
 
 //tipo de dados tratados pelas funções
 typedef int type;
 
 //estrutura da lista sequencial
 typedef struct {
-	type dados[TAM_MAX];
+	type dados[TAM_LISTA];
 	int inicio, fim, qnt;
 }lista;
 
@@ -21,6 +22,9 @@ typedef struct no_lista{
 	struct no_lista* ant;
 	type dado;
 }no_lista;
+
+//vetor de ponteiros de no_lista com TAM_HASH posicoes
+typedef no_lista* hash[TAM_HASH];
 
 //estrutura de nos da arvore encadeada
 typedef struct no_arvore{
@@ -148,5 +152,20 @@ void init_arvore(arvore* arvore);
 
 //insere os elementos e balanceia caso necessario
 void inserir_arvore(arvore* arvore, no_arvore** raiz, type n);
+
+//inicializa a hashtable
+void init_hash(hash* hashtable);
+
+//realica a funcao hash e devolve o indice codificado do dado n
+int hash_func(type n);
+
+//adiciona o dado n na tabela hash
+bool adicionar_hash(hash hashtable, type n);
+
+//acessa o dado n e devolve o no que o tem
+no_lista* acessar_hash(hash hashtable, type n);
+
+//remove o no que contem o dado n da tabela hash
+void remover_hash(hash hashtable, type n);
 
 #endif // !PROVA_H
