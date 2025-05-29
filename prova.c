@@ -19,7 +19,7 @@ bool inserir(lista* l, type n, int pos) {
 }
 
 bool adicionar(lista* l, type n) {
-	if (l->qnt >= TAM_MAX) return false;
+	if (l->qnt >= TAM_LISTA) return false;
 
 	l->dados[l->qnt++] = n;
 
@@ -27,7 +27,7 @@ bool adicionar(lista* l, type n) {
 }
 
 bool inserir_ordenado(lista* l, type n) {
-	if (l->qnt >= TAM_MAX) return false;
+	if (l->qnt >= TAM_LISTA) return false;
 
 	int i;
 	for (i = l->qnt - 1; n <= l->dados[i]; i--) l->dados[i + 1] = l->dados[i];
@@ -135,7 +135,7 @@ bool lista_vazia(lista l) {
 }
 
 bool lista_cheia(lista l) {
-	return l.qnt >= TAM_MAX;
+	return l.qnt >= TAM_LISTA;
 }
 
 bool enfileirar(lista* f, type n) {
@@ -143,7 +143,7 @@ bool enfileirar(lista* f, type n) {
 
 	f->dados[f->fim] = n;
 
-	f->fim = (f->fim + 1) % TAM_MAX;
+	f->fim = (f->fim + 1) % TAM_LISTA;
 
 	f->qnt++;
 
@@ -153,7 +153,7 @@ bool enfileirar(lista* f, type n) {
 type desenfileirar(lista* f) {
 	if (lista_vazia(*f)) return f->dados;
 
-	f->inicio = (f->inicio + 1) % TAM_MAX;
+	f->inicio = (f->inicio + 1) % TAM_LISTA;
 
 	f->qnt--;
 	
@@ -237,7 +237,7 @@ void heap_maximo(lista* l) {
 
 void print_sequencial(lista l) {
 	for (int i = l.inicio; l.qnt; i++) {
-		printf("%d ", l.dados[i % TAM_MAX]);
+		printf("%d ", l.dados[i % TAM_LISTA]);
 		l.qnt--;
 	}
 	printf("\n");
@@ -528,4 +528,57 @@ void inserir_arvore(arvore* a, no_arvore** no_atual, type n) {
 
 	ajustar_altura_no(*no_atual);
 	if ((*no_atual)->bal > 1 || (*no_atual)->bal < -1) balancear_arvore(no_atual);
+}
+
+void init_hash(hash h) {
+	for (int i = 0; i < TAM_HASH; i++) h[i] = NULL;
+}
+
+int hash_func(type n) {
+	type copia = n;
+	int tam = 0;
+	while (copia > 0) {
+		copia /= 10;
+		tam++;
+	}
+
+	return (n * tam) % TAM_HASH;
+}
+
+bool adicionar_hash(hash h, type n) {
+	int indice_hash = hash_func(n);
+
+	no_lista* novo_no = malloc(sizeof(no_lista));
+	if (!novo_no) return false;
+	novo_no->dado = n;
+	novo_no->prox = h[indice_hash];
+	novo_no->ant = NULL;
+	
+	if (novo_no->prox) novo_no->prox->ant = novo_no;
+	h[indice_hash] = novo_no;
+
+	return true;
+}
+
+no_lista* acessar_hash(hash h, type n) {
+	int indice_hash = hash_func(n);
+
+	no_lista* no_atual = h[indice_hash];
+	while (no_atual && no_atual->dado != n) no_atual = no_atual->prox;
+
+	return no_atual;
+}
+
+void remover_hash(hash h, type n) {
+	int indice_hash = hash_func(n);
+
+	no_lista** no_atual = &h[indice_hash];
+	while ((*no_atual) && (*no_atual)->dado != n) no_atual = &(*no_atual)->prox;
+
+	if (*no_atual) {
+		no_lista* no_temp = *no_atual;
+		*no_atual = (*no_atual)->prox;
+		if (*no_atual) (*no_atual)->ant = no_temp->ant;
+		free(no_temp);
+	}
 }
